@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+{% load i18n %}
+<html lang="en">
+<head>
+
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	
+	<title>
+		{% block title %}{% endblock %}
+	</title>
+
+	<meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
+	<link rel="icon" href="/static/assets/img/icon.ico" type="image/x-icon"/>
+
+	<!-- Fonts and icons -->
+	<script src="/static/assets/js/plugin/webfont/webfont.min.js"></script>
+	<script>
+		WebFont.load({
+			google: {"families":["Lato:300,400,700,900"]},
+			custom: {"families":["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], 
+			urls: ['/static/assets/css/fonts.min.css']},
+			active: function() {
+				sessionStorage.fonts = true;
+			}
+		});
+	</script>
+
+	<!-- CSS Files -->
+	<link rel="stylesheet" href="/static/assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/static/assets/css/atlantis.min.css">
+	<link href="/static/assets/css/bootstrap-toggle.min.css" rel="stylesheet">
+
+	<!-- CSS Just for demo purpose, don't include it in your project -->
+	<link rel="stylesheet" href="/static/assets/css/demo.css">
+
+    <!-- Specific CSS goes HERE -->
+    {% block stylesheets %}{% endblock stylesheets %}
+
+</head>
+<body data-background-color="dark">
+
+	<div class="wrapper {% block layout %}{% endblock layout %}">
+
+		{% include 'includes/navigation.html' %}
+
+		{% include 'includes/sidenav.html' %}
+
+		<div class="main-panel">
+
+			<div class="content">
+			{% comment %} loader {% endcomment %}
+			<div class="text-center" id="loader" style="position:fixed;height:100%;width:100%;top:0;
+				left:0;background-color:rgba(26,32,53,1.5);z-index:5;padding-left:15%;">
+				<div class="spinner-border text-light" role="status" style="margin-top:50vh">
+					<span class="sr-only">{% trans "Chargement..." %}</span>
+				</div>
+				<h1 class="text-light">{% trans "Chargement..." %}</h1>
+			</div>
+			{% comment %} end loader {% endcomment %}
+
+				{% block content %}{% endblock content %}
+			
+			</div>
+
+			{% include 'includes/footer.html' %}
+
+		</div>
+		
+		{% comment %} {% include 'includes/aside-settings.html' %} {% endcomment %}
+
+	</div>
+
+	{% include 'includes/scripts.html' %}
+	<script>
+		$('a').on('click', (e)=>{
+			if(!$(e.target).closest('a').attr('href').startsWith('#')){
+				$('#loader').show()
+			}
+		})
+		$(window).on('load', ()=>{
+			$('#loader').hide()
+		})
+		{% comment %} change theme {% endcomment %}
+		$('body').attr('data-background-full', 'green');
+		$('.logo-header').attr('data-background-color', 'green');
+		$('.main-header .navbar-header').attr('data-background-color', 'green2');
+		$('.sidebar').attr('data-background-color', 'dark2');
+		$('body').attr('data-background-color', 'bg1');
+		$(document).ready(()=>{
+			$.get('{% url 'user' %}', (data)=>{
+				localStorage.setItem('user', data.image)
+			})
+		})
+	</script>
+	<!-- Specific JS goes HERE -->
+    {% block javascripts %}{% endblock javascripts %}
+	
+</body>
+</html>

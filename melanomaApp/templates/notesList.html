@@ -1,0 +1,183 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %} {% trans "Liste des Notes" %} {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<div class="page-inner">
+    <div class="page-header">
+        <h4 class="page-title">{% trans "Liste des Notes" %}</h4>
+        <ul class="breadcrumbs">
+            <li class="nav-home">
+                <a href="{% url 'index' %}">
+                    <i class="flaticon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="#">{% trans "Liste des Notes" %}</a>
+            </li>
+        </ul>
+    	
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title" style ="float: left;">
+                        <span>{% trans "Liste des Notes pour" %} : </span><img class="imgCard" style="height:60px" src="{{img.image.url}}" alt="{{img.image.name}}">
+                    </div>
+                    <div id="zoomModal" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" style="font-size:20px;font-weight:bolder">Modal title</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <img class="img-responsive" id="imgModal" style="width:100%" src="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style ="float: right;" class="col-md-2">
+                        <a href={% url 'addNote' imgId=img.id  %}  type="submit" class="btn btn-success text-light">{% trans "Ajouter" %}</a>
+		            </div>
+                    <div style ="float: right;" class="col-md-2">
+                       
+		            </div>
+        
+                </div>
+                <div class="card-body">
+               
+                    <div class="table-responsive">
+                        <table id="patientsTable" class="display table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Titre</th>
+                                    <td>Date</td>
+                                    <th style="width: 10%">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for note in notes %}
+                                <tr>
+                                    <td>{{note.id}}</td>
+                                    <td>{{note.title}}</td>
+                                    <td>{{note.date}}</td>
+                                  
+                                    <td>
+                                        <div class="form-button-action">
+                                        <button type="button" data-toggle="tooltip" title="" onclick="readNote('{{note.title}}','{{note.content}} ','{{note.date}}')"
+                                            class="btn btn-link btn-success" data-original-title="Supprimer">
+                                            <i class="far fa-envelope"></i>
+                                         </button>
+                                            <button type="button" data-toggle="tooltip" title="" onclick="deleteNote('{% url 'deleteNote' note.id %}','{{note.title}}')"
+                                                class="btn btn-link btn-danger" data-original-title="Supprimer">
+                                                <i class="fa fa-times"></i>
+                                        </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{% block javascripts %}
+
+<script>
+    $(document).ready(function () {
+        // Add Row
+        $('#patientsTable').DataTable({
+            "pageLength": 5,
+        });
+    });
+    {% if add %}
+	  //Notify
+		$.notify({
+			icon: 'flaticon-success',
+			title: '{% trans "Image Enregistee avec succes" %}',
+			message: '',
+		},{
+			type: 'success',
+			placement: {
+				from: "bottom",
+				align: "right"
+			},
+			time: 1000,
+		});
+    {% endif %}
+    
+    function deleteNote(url, title){
+        swal({
+            title: 'Sure ?',
+            text: "Voulez vous supprimer Note "+title+' ?',
+            type: 'warning',
+            buttons:{
+                cancel: {
+                    visible: true,
+                    text : 'Annuler',
+                    className: 'btn btn-success'
+                },        			
+                confirm: {
+                    text : 'Oui',
+                    className : 'btn btn-danger'
+                }
+            }
+        }).then((willDelete) => {
+            if (willDelete) {
+                swal("Note "+title+" supprime avec succes", {
+                    icon: "success",
+                    buttons : {
+                        confirm : {
+                            className: 'btn btn-success'
+                        }
+                    }
+                }).then(e=>{
+                    window.location = url
+                })
+            }
+        });
+    }
+
+
+
+
+    function readNote(title ,content,date) {
+       
+        swal({
+            title:"Titre : "+title,
+            text: "Contenu : "+content +"\n \n date : "+date,
+            type: 'warning',
+            buttons:{
+                confirm : {
+                            className: 'btn btn-success'
+                    }
+            }
+        })
+    }
+    $('.imgCard').on('click',(e)=>{
+        var src = $(e.target).attr('src')
+        var title = $(e.target).attr('alt')
+        $('#zoomModal .modal-title').html(title)
+        $('#imgModal').attr('src', src)
+        $('#zoomModal').modal('show')
+    })
+
+
+</script>
+
+{% endblock javascripts %}

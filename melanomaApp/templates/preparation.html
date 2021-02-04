@@ -1,0 +1,573 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %} {% trans "Préparation" %} {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<div class="page-inner">
+    <div class="page-header">
+        <h4 class="page-title">{% trans "Préparation" %}</h4>
+        <ul class="breadcrumbs">
+            <li class="nav-home">
+                <a href="{% url 'index' %}">
+                    <i class="flaticon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'uploadImg' %}">{% trans "Préparation" %}</a>
+            </li>
+        </ul>
+       
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title" style ="float: right;">
+                        <a   href={% url 'results' imgId=img.id  %}  type="submit" class="btn btn-success text-light btn-sm">{% trans "Results" %}</a>
+                        <a  href={% url 'notesList' imgId=img.id  %} class="btn btn-outline-secondary btn-rounded  btn-sm "><i class="flaticon-pen"></i>{% trans " Notes" %}</a>
+                      </div>
+                    {% comment %} <div class="form-group">
+                        <div class="selectgroup w-100">
+                            <label class="selectgroup-item" onclick="preparation()">
+                                <input type="radio" name="value" value="50" class="selectgroup-input"
+                                    checked="">
+                                <span class="selectgroup-button">{% trans "Préparation" %}</span>
+                            </label>
+                            <label class="selectgroup-item" onclick="asymmetry()">
+                                <input type="radio" name="value" value="100" class="selectgroup-input">
+                                <span class="selectgroup-button">{% trans "Asymétrie" %}</span>
+                            </label>
+                            <label class="selectgroup-item" onclick="border()">
+                                <input type="radio" name="value" value="150" class="selectgroup-input">
+                                <span class="selectgroup-button">{% trans "Bordure" %}</span>
+                            </label>
+                            <label class="selectgroup-item" onclick="color()">
+                                <input type="radio" name="value" value="200" class="selectgroup-input">
+                                <span class="selectgroup-button">{% trans "Couleur" %}</span>
+                            </label>
+                            <label class="selectgroup-item" onclick="diameter()">
+                                <input type="radio" name="value" value="200" class="selectgroup-input">
+                                <span class="selectgroup-button">{% trans "Diamètre" %}</span>
+                            </label>
+                        </div>
+                    </div> {% endcomment %}
+                  
+                    <div class="card-title imgCard zoom" style ="float: left;">
+                        <div class="info-post ml-2" style="display: none;">
+                            {% trans "Image Originale" %}
+                        </div>
+                        <span class="zoom" id="titleCard">{% trans "Etude préparatoire pour : " %}</span><img class=" zoom" style="height:60px" src="{{img.image.url}}" alt="{{image.image.name}}">
+                    </div>
+                         
+                </div>
+
+                  <!--//////////////////////// preparation Card //////////////////////////////-->
+                <div class="card-body row" id="preparationCard">
+                    <div class="card card-post card-round col-md-4 imgCard">
+                        <img class="card-img-top zoom" src="{{details.preprocess.url}}">
+                        <button style="position: absolute; right: 5%; margin-top: 10px;"
+						 class="btn btn-icon btn-light btn-round btn-xs zoom ">
+							<i class="fa fa-search-plus zoom"></i>
+						</button>
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="info-post ml-2">
+                                    {% trans "Pretraitement" %}
+                                    <br/><br/>
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="fas fa-info-circle"></i>
+                                        <small class="text-muted">Cette étape prend en entrée une image dermoscopique, 
+                                                elle applique une méthode d’élimination des poils et des artefacts
+                                             afin de faciliter les prochains traitements et de ne pas fausser les résultats.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-post card-round col-md-4 imgCard">
+                        <img class="card-img-top zoom" src="{{details.segmentation.url}}">
+                        <button style="position: absolute; right: 5%; margin-top: 10px;"
+						 class="btn btn-icon btn-light btn-round btn-xs zoom ">
+							<i class="fa fa-search-plus zoom"></i>
+						</button>
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="info-post ml-2">
+                                    {% trans "Segmentation" %}
+                                    <br/><br/>
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="fas fa-info-circle"></i>
+                                        <small class="text-muted">la segmentation consiste à isoler la zone malade de la peau normale en fonction de l'homogénéité des pixels. 
+                                            L'homogénéité des pixels peut être déterminée par les caractéristiques de couleur et de texture.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-post card-round col-md-4 imgCard">
+                        <img class="card-img-top zoom" src="{{details.posttraitement.url}}">
+                        <button style="position: absolute; right: 5%; margin-top: 10px;"
+						 class="btn btn-icon btn-light btn-round btn-xs zoom ">
+							<i class="fa fa-search-plus zoom"></i>
+						</button>
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="info-post ml-2">
+                                    {% trans "PostTraitement" %}
+                                    <br/><br/>
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="fas fa-info-circle"></i>
+                                        <small class="text-muted">L'algorithme part de la limite de la lésion et va à l'intérieur 
+                                            de cette dernière en remplissant progressivement tout ce qui se trouve dans la limite.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+
+             <!--//////////////////////// asymmetry Card //////////////////////////////-->
+            
+                <div class="card-body row" id="asymmetryCard" style="display: none;">
+                    <div class="card card-post card-round col-md-4 imgCard">
+                        <img class="card-img-top zoom" src="{{details.distance.url}}">
+                        <button style="position: absolute; right: 5%; margin-top: 10px;"
+						 class="btn btn-icon btn-light btn-round btn-xs zoom ">
+							<i class="fa fa-search-plus zoom"></i>
+						</button>
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="info-post ml-2">
+                                    {% trans "Asymétrie par distance entre les centres" %}<br/><br/>
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="fas fa-info-circle"></i>
+                                        <small class="text-muted">la distance entre le centre de masse de la lésion et le centre du cercle englobant la lésion aident à representer l'Asymétrie</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-post card-round col-md-4 imgCard">
+                        <img class="card-img-top zoom" src="{{details.homologue.url}}">
+                        <button style="position: absolute; right: 5%; margin-top: 10px;"
+						 class="btn btn-icon btn-light btn-round btn-xs zoom ">
+							<i class="fa fa-search-plus zoom"></i>
+						</button>
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="info-post ml-2">
+                                    {% trans "Asymétrie par pixels homologues" %}<br/><br/>
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="fas fa-info-circle"></i>
+                                        <small class="text-muted">Les pixels rouges dans l'image indiquent une Asymétrie dans la lesion</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-post card-round col-md-4 imgCard">
+                        <img class="card-img-top zoom" src="{{details.subregion.url}}">
+                        <button style="position: absolute; right: 5%; margin-top: 10px;"
+						 class="btn btn-icon btn-light btn-round btn-xs zoom ">
+							<i class="fa fa-search-plus zoom"></i>
+						</button>
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="info-post ml-2">
+                                    {% trans "Asymétrie par sous regions" %}<br/><br/>
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="fas fa-info-circle"></i>
+                                        <small class="text-muted">Les pixels rouges dans l'image indiquent une Asymétrie dans la lesion</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            <!--//////////////////////// border Card //////////////////////////////-->
+            
+                <div class="card-body row" id="borderCard" style="display: none;">
+                    <div class="card card-post card-round col-md-4 imgCard">
+                        <img class="card-img-top zoom" src="{{details.border.url}}">
+                        <button style="position: absolute; right: 5%; margin-top: 10px;"
+                        class="btn btn-icon btn-light btn-round btn-xs zoom ">
+                            <i class="fa fa-search-plus zoom"></i>
+                        </button>
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="info-post ml-2">
+                                    {% trans "Dimension fractale" %}
+                                    <br/><br/>
+                                        <div class="alert alert-warning" role="alert">
+                                            <i class="fas fa-info-circle"></i>
+                                            <small class="text-muted">
+                                                La dimension fractale indique les irregilaritee de contour, elle est representee par les points verts
+                                            </small>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-post card-round col-md-4 imgCard">
+                        <img class="card-img-top zoom" src="{{details.borderlength.url}}">
+                        <button style="position: absolute; right: 5%; margin-top: 10px;"
+                        class="btn btn-icon btn-light btn-round btn-xs zoom ">
+                            <i class="fa fa-search-plus zoom"></i>
+                        </button>
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="info-post ml-2">
+                                    {% trans "Longueur de Bordure" %}
+                                    <br/><br/>
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="fas fa-info-circle"></i>
+                                        <small class="text-muted">
+                                            le cercle represente la bordure de la lesion, avec elimination des irregularitees pour mieux representer la caracteristique de Bordure.<br/>
+                                            la surface blue indique une presence d'irregilaritee dans la bordure
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-post card-round col-md-4 imgCard">
+                        <img class="card-img-top zoom" src="{{details.enclosingCircle.url}}">
+                        <button style="position: absolute; right: 5%; margin-top: 10px;"
+                        class="btn btn-icon btn-light btn-round btn-xs zoom ">
+                            <i class="fa fa-search-plus zoom"></i>
+                        </button>
+                        <div class="card-body">
+                            <div class="d-flex">
+                                <div class="info-post ml-2">
+                                    {% trans "Rondeur / Indice d'irregularite" %}
+                                    <br/><br/>
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="fas fa-info-circle"></i>
+                                        <small class="text-muted">
+                                            Le cercle aide a mieux visualiser la rondeur du contour
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            <!--//////////////////////// color Card //////////////////////////////-->
+            
+            <div class="card-body row" id="colorCard" style="display: none;">
+                <div class="card card-post card-round col-md-4 imgCard">
+                    <img class="card-img-top zoom" src="{{details.kmeans.url}}">
+                    <button style="position: absolute; right: 5%; margin-top: 10px;"
+                    class="btn btn-icon btn-light btn-round btn-xs zoom ">
+                        <i class="fa fa-search-plus zoom"></i>
+                    </button>
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="info-post ml-2">
+                                {% trans "Clustering" %}
+                                <br/><br/>
+                                <div class="alert alert-warning" role="alert">
+                                    <i class="fas fa-info-circle"></i>
+                                    <small class="text-muted">
+                                        Methode de clustering (regroupement) KMEANS vers 5 groupes de couleurs, permet de differencier les nombreuses nuances de couleurs
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card card-post card-round col-md-4 imgCard">
+                    <img class="card-img-top zoom" src="{{details.kmeans2.url}}">
+                    <button style="position: absolute; right: 5%; margin-top: 10px;"
+                    class="btn btn-icon btn-light btn-round btn-xs zoom ">
+                        <i class="fa fa-search-plus zoom"></i>
+                    </button>
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="info-post ml-2">
+                                {% trans "Clustering" %}
+                                <br/><br/>
+                                <div class="alert alert-warning" role="alert">
+                                    <i class="fas fa-info-circle"></i>
+                                    <small class="text-muted">
+                                        Methode de clustering (regroupement) KMEANS vers 3 groupes de couleurs, permet de differencier les nombreuses nuances de couleurs
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card card-post card-round col-md-4 imgCard">
+                    <img class="card-img-top zoom" src="{{details.hsv.url}}">
+                    <button style="position: absolute; right: 5%; margin-top: 10px;"
+                    class="btn btn-icon btn-light btn-round btn-xs zoom ">
+                        <i class="fa fa-search-plus zoom"></i>
+                    </button>
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="info-post ml-2">
+                                {% trans "Intervals HSV" %}
+                                <br/><br/>
+                                <div class="alert alert-warning" role="alert">
+                                    <i class="fas fa-info-circle"></i>
+                                    <small class="text-muted">
+                                        Methode de seuillage HSV
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card card-post card-round col-md-4 imgCard">
+                    <img class="card-img-top zoom" src="{{details.yuv.url}}">
+                    <button style="position: absolute; right: 5%; margin-top: 10px;"
+                    class="btn btn-icon btn-light btn-round btn-xs zoom ">
+                        <i class="fa fa-search-plus zoom"></i>
+                    </button>
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="info-post ml-2">
+                                {% trans "Intervals YUV" %}
+                                <br/><br/>
+                                <div class="alert alert-warning" role="alert">
+                                    <i class="fas fa-info-circle"></i>
+                                    <small class="text-muted">
+                                        Methode de seuillage YUV
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card card-post card-round col-md-4 imgCard">
+                    <img class="card-img-top zoom" src="{{details.ycbcr.url}}">
+                    <button style="position: absolute; right: 5%; margin-top: 10px;"
+                    class="btn btn-icon btn-light btn-round btn-xs zoom ">
+                        <i class="fa fa-search-plus zoom"></i>
+                    </button>
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="info-post ml-2">
+                                {% trans "Intervals YCbCr" %}
+                                <br/><br/>
+                                <div class="alert alert-warning" role="alert">
+                                    <i class="fas fa-info-circle"></i>
+                                    <small class="text-muted">
+                                        Methode de seuillage YCbCr
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+           <!--//////////////////////// diameter Card //////////////////////////////-->
+            
+            <div class="card-body row" id="diameterCard" style="display: none;">
+                <div class="card card-post card-round col-md-4 imgCard">
+                    <img class="card-img-top zoom" src="{{details.enclosingCircle.url}}">
+                    <button style="position: absolute; right: 5%; margin-top: 10px;"
+                     class="btn btn-icon btn-light btn-round btn-xs zoom ">
+                        <i class="fa fa-search-plus zoom"></i>
+                    </button>
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="info-post ml-2">
+                                {% trans "Cercle Englobant" %}
+                                <br/><br/>
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="fas fa-info-circle"></i>
+                                        <small class="text-muted">
+                                             Le diamètre de cercle le plus proche de la lésion sera considéré comme le diamètre de cette lésion.
+                                        </small>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card card-post card-round col-md-4 imgCard">
+                    <img class="card-img-top zoom" src="{{details.openCircle.url}}">
+                    <button style="position: absolute; right: 5%; margin-top: 10px;"
+                     class="btn btn-icon btn-light btn-round btn-xs zoom ">
+                        <i class="fa fa-search-plus zoom"></i>
+                    </button>
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div class="info-post ml-2">
+                                {% trans "Avec perimetre" %}
+                                <br/><br/>
+                                <div class="alert alert-warning" role="alert">
+                                    <i class="fas fa-info-circle"></i>
+                                    <small class="text-muted">Diamètre de la lesion sera 
+                                        égale à la longueur du diamètre de ce cercle.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                
+                    
+            </div>
+
+
+                <div id="zoomModal" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" style="font-size:20px;font-weight:bolder"></h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <img class="img-responsive" id="imgModal" style="width:100%" src="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{% block javascripts %}
+<script>
+
+    {% if success %}
+    //Notify
+    $.notify({
+        icon: 'flaticon-success',
+        title: '{% trans "Image Enregistee avec succes" %}',
+        message: '',
+    }, {
+        type: 'success',
+        placement: {
+            from: "bottom",
+            align: "right"
+        },
+        time: 1000,
+    });
+    {% endif %}
+    
+    $('.imgCard').on('click',(e)=>{
+        if($(e.target).hasClass('zoom')) {
+        var src = $(e.target).closest('.imgCard').find('img').attr('src')
+        var title = $(e.target).closest('.imgCard').find('.info-post').html()
+        $('#zoomModal .modal-title').html(title)
+        $('#imgModal').attr('src', src)
+        $('#zoomModal').modal('show')
+        }
+    })
+
+    function show(card){
+        card.style.display='';
+    }
+    function hide(card){
+        card.style.display='none';
+    }
+    function preparation(){
+        $("li[id$='Nav']").removeClass('active')
+        $('#preparationNav').addClass('active')
+        document.getElementById("titleCard").textContent="Etude préparatoire pour : "
+        var  preparationCard = document.getElementById("preparationCard")
+        var  asymmetryCard = document.getElementById("asymmetryCard")
+        var  borderCard = document.getElementById("borderCard")
+        var  colorCard = document.getElementById("colorCard")
+        var  diameterCard = document.getElementById("diameterCard")
+     
+        show(preparationCard)
+        hide(asymmetryCard)
+        hide(borderCard)
+        hide(colorCard)
+        hide(diameterCard)
+    }
+
+    function asymmetry(){
+        $("li[id$='Nav']").removeClass('active')
+        $('#asymmetryNav').addClass('active')
+        document.getElementById("titleCard").textContent="Etude Asymétrie pour : "
+        var  preparationCard = document.getElementById("preparationCard")
+        var  asymmetryCard = document.getElementById("asymmetryCard")
+        var  borderCard = document.getElementById("borderCard")
+        var  colorCard = document.getElementById("colorCard")
+        var  diameterCard = document.getElementById("diameterCard")
+     
+        hide(preparationCard)
+        show(asymmetryCard)
+        hide(borderCard)
+        hide(colorCard)
+        hide(diameterCard)
+    }
+
+    function border(){
+        $("li[id$='Nav']").removeClass('active')
+        $('#borderNav').addClass('active')
+        document.getElementById("titleCard").textContent="Etude Bordure pour : "
+        var  preparationCard = document.getElementById("preparationCard")
+        var  asymmetryCard = document.getElementById("asymmetryCard")
+        var  borderCard = document.getElementById("borderCard")
+        var  colorCard = document.getElementById("colorCard")
+        var  diameterCard = document.getElementById("diameterCard")
+     
+        hide(preparationCard)
+        hide(asymmetryCard)
+        show(borderCard)
+        hide(colorCard)
+        hide(diameterCard)
+    }
+
+    function color(){
+        $("li[id$='Nav']").removeClass('active')
+        $('#colorNav').addClass('active')
+        document.getElementById("titleCard").textContent="Etude Couleur pour : "
+        var  preparationCard = document.getElementById("preparationCard")
+        var  asymmetryCard = document.getElementById("asymmetryCard")
+        var  borderCard = document.getElementById("borderCard")
+        var  colorCard = document.getElementById("colorCard")
+        var  diameterCard = document.getElementById("diameterCard")
+     
+        hide(preparationCard)
+        hide(asymmetryCard)
+        hide(borderCard)
+        show(colorCard)
+        hide(diameterCard)
+    }
+
+    function diameter(){
+        $("li[id$='Nav']").removeClass('active')
+        $('#diameterNav').addClass('active')
+        document.getElementById("titleCard").textContent="Etude Diamètre pour : "
+        var  preparationCard = document.getElementById("preparationCard")
+        var  asymmetryCard = document.getElementById("asymmetryCard")
+        var  borderCard = document.getElementById("borderCard")
+        var  colorCard = document.getElementById("colorCard")
+        var  diameterCard = document.getElementById("diameterCard")
+     
+        hide(preparationCard)
+        hide(asymmetryCard)
+        hide(borderCard)
+        hide(colorCard)
+        show(diameterCard)
+    }
+    
+       
+
+
+</script>
+{% endblock javascripts %}

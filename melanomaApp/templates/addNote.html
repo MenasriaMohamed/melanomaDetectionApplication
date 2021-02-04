@@ -1,0 +1,117 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %} {% trans "Add Note" %} {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<div class="page-inner">
+    <div class="page-header">
+        <h4 class="page-title">{% trans "Ajouter Note" %}</h4>
+        <ul class="breadcrumbs">
+            <li class="nav-home">
+                <a href="{% url 'index' %}">
+                    <i class="flaticon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'uploadImg' %}">{% trans "Ajouter Note" %}</a>
+            </li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>{% trans "Ajouter une Note pour" %} : </span><img class="imgCard" style="height:60px" src="{{img.image.url}}" alt="{{img.image.name}}">
+                    </div>
+                </div>
+                <div id="zoomModal" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" style="font-size:20px;font-weight:bolder">Modal title</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <img class="img-responsive" id="imgModal" style="width:100%" src="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        {% if msg %}
+                        <br />
+                        <p style="margin-left: 25px"
+                            class="{% if success %}text-success {% else %} text-danger{% endif %}">
+                            {{ msg | safe }}
+                        </p>
+                        {% else %}
+                        <p style="margin-left: 25px"></p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if success %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <p style="margin-left: 25px">
+                            Note est enregistrée
+                        </p>
+                    </div>
+                </div>
+                {% else %}
+                        
+                <form method="POST" action={% url 'addNote' imgId=img.id  %} enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="card-body">
+                        <div class="row">
+                                <div class="col-md-8 col-lg-6">
+                                    <div class="col-sm">
+                                         <div class="form-group">
+                                           <label>Titre</label>
+                                           {{form.title}}
+                                           <span class="text-danger">{{ form.title.errors }}</span>
+                                         </div>
+                                    </div>
+                                    <div class="col-sm">
+                                         <div class="form-group">
+                                           <label>Contenu</label>
+                                           {{form.content}}
+                                           <span class="text-danger">{{ form.content.errors }}</span>
+                                         </div>
+                                    </div>
+                                
+                                </div>
+                            </div>                   
+                    </div>
+                    <div class="card-action">
+                        <button type="submit" class="btn btn-success">{% trans "Ajouter" %}</button>
+                        &nbsp; &nbsp;
+                    </div>
+
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{% block javascripts %}
+    <script>
+        $('.imgCard').on('click',(e)=>{
+            var src = $(e.target).attr('src')
+            var title = $(e.target).attr('alt')
+            $('#zoomModal .modal-title').html(title)
+            $('#imgModal').attr('src', src)
+            $('#zoomModal').modal('show')
+        })
+    </script>
+{% endblock %}

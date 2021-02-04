@@ -1,0 +1,135 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %} {% trans "Patients" %} {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<div class="page-inner">
+    <div class="page-header">
+        <h4 class="page-title">{% trans "Patients" %}</h4>
+        <ul class="breadcrumbs">
+            <li class="nav-home">
+                <a href="{% url 'index' %}">
+                    <i class="flaticon-home"></i>
+                </a>
+            </li>
+            <li class="separator">
+                <i class="flaticon-right-arrow"></i>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'uploadImg' %}">{% trans "Liste des patients" %}</a>
+            </li>
+        </ul>
+    	
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title" style ="float: left;">
+                        <span>{% trans "Liste des patients" %}</span>
+                    </div>
+                    <div style ="float: right;" class="col-md-2">
+                        <a href="{% url 'addPatient' %}"  type="submit" class="btn btn-success text-light">{% trans "Ajouter" %}</a>
+	
+		            </div>
+        
+                </div>
+                <div class="card-body">
+
+                    <div class="table-responsive">
+                        <table id="patientsTable" class="display table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
+                                    <td>Date de naissance</td>
+                                    <td>Sexe</td>
+                                    <td>Mobile</td>
+                                    <th style="width: 10%">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for patient in patients %}
+                                <tr>
+                                    <td>{{patient.lastName}}</td>
+                                    <td>{{patient.firstName}}</td>
+                                    <td>{{patient.birthDate}}</td>
+                                    <td>{{patient.sexe}}</td>
+                                    <td>{{patient.phone}}</td>
+                                    <td>
+                                        <div class="form-button-action">
+                                            <a href={% url 'patientImages' patientId=patient.id %} type="button" data-toggle="tooltip"
+                                                class="btn btn-link btn-primary" data-original-title="{% trans "Liste de images" %}">
+                                                <i class="fa fa-images"></i>
+                                            </a>
+                                            <a href="{% url 'uploadImg' %}?patient={{patient.id}}" type="button" data-toggle="tooltip"
+                                                class="btn btn-link btn-primary" data-original-title="{% trans "Ajouter des images" %}">
+                                                <i class="fa fa-plus"></i>
+                                            </a>
+                                            <a href={% url 'updatePatient' patientId=patient.id %} type="button" data-toggle="tooltip"
+                                                class="btn btn-link btn-primary" data-original-title="{% trans "Modifier patient" %}">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                            <button type="button" data-toggle="tooltip" title="" onclick="deletePatient('{% url 'deletePatient' patient.id %}','{{patient.firstName}} {{patient.lastName}}')"
+                                                class="btn btn-link btn-danger" data-original-title="{% trans "Supprimer" %}">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{% block javascripts %}
+
+<script>
+    $(document).ready(function () {
+        // Add Row
+        $('#patientsTable').DataTable({
+            "pageLength": 5,
+        });
+    });
+    function deletePatient(url, patientName){
+        swal({
+            title: 'Sure ?',
+            text: "Voulez vous supprimer le patient "+patientName+' ?',
+            type: 'warning',
+            buttons:{
+                cancel: {
+                    visible: true,
+                    text : 'Annuler',
+                    className: 'btn btn-success'
+                },        			
+                confirm: {
+                    text : 'Oui',
+                    className : 'btn btn-danger'
+                }
+            }
+        }).then((willDelete) => {
+            if (willDelete) {
+                swal("Patient "+patientName+" supprime avec succes", {
+                    icon: "success",
+                    buttons : {
+                        confirm : {
+                            className: 'btn btn-success'
+                        }
+                    }
+                }).then(e=>{
+                    window.location = url
+                })
+            }
+        });
+    }
+</script>
+
+{% endblock javascripts %}

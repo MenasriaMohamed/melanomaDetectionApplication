@@ -1,0 +1,348 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %} {% trans "Add Note" %} {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="panel-header bg-primary-gradient">
+      <div class="page-inner py-5">
+        <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
+          <div>
+            <h2 class="text-white pb-2 fw-bold">Dashboard</h2>
+            <h5 class="text-white op-7 mb-2">{% trans "Système de détection de mélanome" %} </h5>
+          </div>
+          <div class="ml-md-auto py-2 py-md-0">
+            <a href="{% url 'addPatient'%}" class="btn btn-secondary btn-round">{% trans "Ajouter Patient" %}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="page-inner mt--5">
+      <div class="row mt--2">
+        <div class="col-md-6">
+          <div class="card full-height">
+            <div class="card-body">
+              <div class="card-title">{% trans "Statistiques globales" %}</div>
+              <div class="card-category">{% trans "Informations sur les patients" %}</div>
+              <div class="d-flex flex-wrap justify-content-around pb-2 pt-4">
+                <div class="px-2 pb-2 pb-md-0 text-center">
+                  <div id="circles-1"></div>
+                  <h6 class="fw-bold mt-3 mb-0">{% trans "Patients" %}</h6>
+                </div>
+                <div class="px-2 pb-2 pb-md-0 text-center">
+                  <div id="circles-2"></div>
+                  <h6 class="fw-bold mt-3 mb-0">Non Melanome</h6>
+                </div>
+                <div class="px-2 pb-2 pb-md-0 text-center">
+                  <div id="circles-3"></div>
+                  <h6 class="fw-bold mt-3 mb-0">Melanome</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card full-height">
+            <div class="card-body">
+              <div class="card-title">{% trans "Patients par mois" %}</div>
+              <div class="row py-3">
+                <div class="col-md-4 d-flex flex-column justify-content-around">
+                  <div>
+                    <h6 class="fw-bold text-uppercase text-success op-8">Non Melanome</h6>
+                    <h3 class="fw-bold" id ="nonMel"></h3>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold text-uppercase text-danger op-8">Melanome</h6>
+                    <h3 class="fw-bold" id ="mel"></h3>
+                  </div>
+                </div>
+                <div class="col-md-8">
+                  <div id="chart-container">
+                    <canvas id="totalIncomeChart"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-head-row">
+                <div class="card-title">Statistiques des Patients</div>
+                <div class="card-tools">
+                                  </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container" style="min-height: 375px">
+                <canvas id="statisticsChart">
+
+                </canvas>
+              </div>
+              <div id="myChartLegend"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-primary">
+            <div class="card-header">
+              <div class="card-title">Totale Images :</div>
+            </div>
+            <div class="card-body pb-0">
+              <div class="mb-4 mt-2">
+                <h1>{{NbImage}} images </h1>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body pb-0">
+              <div class="h4 fw-bold float-right text-danger">{{NbMelanomImage}}% Melanome</div>
+              <h2 class="mb-2">{{NbImage}} Images</h2>
+              <p class="text-muted">Images Melanome/mois :</p>
+              <div class="pull-in sparkline-fix">
+                <div id="lineChart"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+     
+    </div>
+
+{% endblock content %}
+
+{% block javascripts %}
+
+	{% comment %} <script src="/static/assets/js/demo.js"></script> {% endcomment %}
+
+	<script>
+        
+        var nbPatients = "{{allPatient}}";
+        var nbNonMelanom = "{{nbNonMelanom}}";
+        var nbMelanom = "{{nbMelanom}}";
+        
+        var  nbNonMelanomVal =0
+        var  nbMelanomVal =0
+        if(nbPatients!=0){
+            nbNonMelanomVal =(nbNonMelanom/nbPatients)*100
+            nbMelanomVal = (nbMelanom/nbPatients)*100
+        }
+        document.getElementById("nonMel").textContent=nbNonMelanom 
+        document.getElementById("mel").textContent=nbMelanom 
+        
+        Circles.create({
+			id:'circles-1',
+			radius:45,
+			value:100,
+			maxValue:100,
+			width:7,
+			text: nbPatients,
+			colors:['#f1f1f1', '#FF9E27'],
+			duration:400,
+			wrpClass:'circles-wrp',
+			textClass:'circles-text',
+			styleWrapper:true,
+			styleText:true
+		})
+
+		Circles.create({
+			id:'circles-2',
+			radius:45,
+			value:nbNonMelanomVal,
+			maxValue:100,
+			width:7,
+			text: nbNonMelanom,
+			colors:['#f1f1f1', '#2BB930'],
+			duration:400,
+			wrpClass:'circles-wrp',
+			textClass:'circles-text',
+			styleWrapper:true,
+			styleText:true
+		})
+
+		Circles.create({
+			id:'circles-3',
+			radius:45,
+			value:nbMelanomVal,
+			maxValue:100,
+			width:7,
+			text: nbMelanom,
+			colors:['#f1f1f1', '#F25961'],
+			duration:400,
+			wrpClass:'circles-wrp',
+			textClass:'circles-text',
+			styleWrapper:true,
+			styleText:true
+		})
+
+		var totalIncomeChart = document.getElementById('totalIncomeChart').getContext('2d');
+    var months ='{{ months}}'; 
+    var months = months.split(",")
+	var MmonthsImages ='{{ MmonthsImages}}'; 
+    var MmonthsImages = MmonthsImages.split(",")
+	
+	
+    var mytotalIncomeChart = new Chart(totalIncomeChart, {
+			type: 'bar',
+			data: {
+        //  janvier,février,mars,avril,mai,juin,juillet,août, septembre,octobre,novembre, décembre.
+				labels: ["jan", "fév", "mar", "avr", "mai", "juin", "juil", "aoû", "seb", "oct","nov","déc"],
+				datasets : [{
+					label: "Total Income",
+					backgroundColor: '#ff9e27',
+					borderColor: 'rgb(23, 125, 255)',
+					data: [months[0][1], months[1], months[2], months[3], months[4], months[5], months[6], months[7], months[8], months[9] ,months[10] ,months[11][1]],
+				}],
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				legend: {
+					display: false,
+				},
+				scales: {
+					yAxes: [{
+						ticks: {
+							display: false //this will remove only the label
+						},
+						gridLines : {
+							drawBorder: false,
+							display : false
+						}
+					}],
+					xAxes : [ {
+						gridLines : {
+							drawBorder: false,
+							display : false
+						}
+					}]
+				},
+			}
+		});
+
+		$('#lineChart').sparkline([MmonthsImages[0][1],MmonthsImages[1],MmonthsImages[2],MmonthsImages[3],
+		MmonthsImages[4],MmonthsImages[5],MmonthsImages[6] ,MmonthsImages[7],MmonthsImages[8] ,MmonthsImages[9],MmonthsImages[10],MmonthsImages[11][1]], {
+			type: 'line',
+			height: '70',
+			width: '100%',
+			lineWidth: '2',
+			lineColor: '#f3545d',
+			fillColor: 'rgba(255, 165, 52, .14)'
+    });
+
+	var ctx = document.getElementById('statisticsChart').getContext('2d');
+	var Mmonths ='{{ Mmonths}}'; 
+	var Mmonths = Mmonths.split(",")
+	var Nmonths ='{{ Nmonths}}'; 
+	var Nmonths = Nmonths.split(",") 
+	
+	var statisticsChart = new Chart(ctx, {
+		type: 'line',
+		data: {
+			labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+			datasets: [ {
+				label: "Melanome",
+				borderColor: '#f3545d',
+				pointBackgroundColor: 'rgba(243, 84, 93, 0.6)',
+				pointRadius: 0,
+				backgroundColor: 'rgba(243, 84, 93, 0.4)',
+				legendColor: '#f3545d',
+				fill: true,
+				borderWidth: 2,
+		data: [Mmonths[0][1], Mmonths[1], Mmonths[2], Mmonths[3], Mmonths[4], Mmonths[5], Mmonths[6], Mmonths[7], Mmonths[8], Mmonths[9] ,Mmonths[10] ,Mmonths[11][1]],
+			
+			}, {
+				label: "Patients",
+				borderColor: '#fdaf4b',
+				pointBackgroundColor: 'rgba(253, 175, 75, 0.6)',
+				pointRadius: 0,
+				backgroundColor: 'rgba(253, 175, 75, 0.4)',
+				legendColor: '#fdaf4b',
+				fill: true,
+				borderWidth: 2,
+		data: [months[0][1], months[1], months[2], months[3], months[4], months[5], months[6], months[7], months[8], months[9] ,months[10] ,months[11][1]],
+			
+			}, {
+				label: "Non Melanome",
+				borderColor: '#177dff',
+				pointBackgroundColor: 'rgba(23, 125, 255, 0.6)',
+				pointRadius: 0,
+				backgroundColor: 'rgba(23, 125, 255, 0.4)',
+				legendColor: '#177dff',
+				fill: true,
+				borderWidth: 2,
+		data: [Nmonths[0][1], Nmonths[1], Nmonths[2], Nmonths[3], Nmonths[4], Nmonths[5], Nmonths[6], Nmonths[7], Nmonths[8], Nmonths[9] ,Nmonths[10] ,Nmonths[11][1]],
+			
+			}]
+		},
+		options : {
+			responsive: true, 
+			maintainAspectRatio: false,
+			legend: {
+				display: false
+			},
+			tooltips: {
+				bodySpacing: 4,
+				mode:"nearest",
+				intersect: 0,
+				position:"nearest",
+				xPadding:10,
+				yPadding:10,
+				caretPadding:10
+			},
+			layout:{
+				padding:{left:5,right:5,top:15,bottom:15}
+			},
+			scales: {
+				yAxes: [{
+					ticks: {
+						fontStyle: "500",
+						beginAtZero: false,
+						maxTicksLimit: 5,
+						padding: 10
+					},
+					gridLines: {
+						drawTicks: false,
+						display: false
+					}
+				}],
+				xAxes: [{
+					gridLines: {
+						zeroLineColor: "transparent"
+					},
+					ticks: {
+						padding: 10,
+						fontStyle: "500"
+					}
+				}]
+			}, 
+			legendCallback: function(chart) { 
+				var text = []; 
+				text.push('<ul class="' + chart.id + '-legend html-legend">'); 
+				for (var i = 0; i < chart.data.datasets.length; i++) { 
+					text.push('<li><span style="background-color:' + chart.data.datasets[i].legendColor + '"></span>'); 
+					if (chart.data.datasets[i].label) { 
+						text.push(chart.data.datasets[i].label); 
+					} 
+					text.push('</li>'); 
+				} 
+				text.push('</ul>'); 
+				return text.join(''); 
+			}  
+		}
+	});
+	// generate HTML legend
+	myLegendContainer.innerHTML = statisticsChart.generateLegend();
+	// bind onClick event to all LI-tags of the legend
+	var legendItems = myLegendContainer.getElementsByTagName('li');
+	for (var i = 0; i < legendItems.length; i += 1) {
+		legendItems[i].addEventListener("click", legendClickCallback, false);
+	}
+	</script>
+{% endblock javascripts %}

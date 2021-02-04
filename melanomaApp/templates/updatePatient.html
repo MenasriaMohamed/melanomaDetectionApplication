@@ -1,0 +1,113 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %} {% trans "Modifier Patient" %} {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<div class="page-inner">
+    <div class="page-header">
+        <h4 class="page-title">{% trans "Modifier Patient" %}</h4>
+        
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>{% trans "Modifier Patient" %}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        {% if msg %}
+                        <br />
+                        <p style="margin-left: 25px"
+                            class="{% if success %}text-success {% else %} text-danger{% endif %}">
+                            {{ msg | safe }}
+                        </p>
+                        {% else %}
+                        <p style="margin-left: 25px"></p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if success %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <p style="margin-left: 25px">
+                            Patient enregistré
+                        </p>
+                    </div>
+                </div>
+                {% else %}
+                        
+                <form method="POST" action="{% url 'updatePatient' patientId=patient.id %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label>Prénom</label>
+                                    {{form.firstName}}
+                                    <span class="text-danger">{{ form.firstName.errors }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label>Nom</label>
+                                    {{form.lastName}}
+                                    <span class="text-danger">{{ form.lastName.errors }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label>Date de naissance</label>
+                                    {{form.birthDate}}
+                                    <span class="text-danger">{{ form.birthDate.errors }}</span>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                        <div class="row">
+                            <!-- <div class="col-sm">
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    {{form.email}}
+                                    <span class="text-danger">{{ form.email.errors }}</span>
+                                </div>
+                            </div> -->
+                             <div class="col-sm">
+                                <div class="form-group">
+                                     <label for="defaultSelect">Sexe</label>
+                                    {{form.sexe}}
+                                </div>
+                             </div>
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label>Téléphone</label>
+                                    {{form.phone}}
+                                    <span class="text-danger">{{ form.phone.errors }}</span>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label>Adresse</label>
+                                    {{form.address}}
+                                    <span class="text-danger">{{ form.address.errors }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-action">
+                        <button type="submit" class="btn btn-success">{% trans "Modifier" %}</button>
+                        &nbsp; &nbsp;
+                    </div>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

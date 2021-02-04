@@ -1,0 +1,211 @@
+{% load i18n %}
+{% with url_name=request.resolver_match.url_name %}
+<!-- Sidebar -->
+<div class="sidebar sidebar-style-2" data-background-color="dark2">
+
+	<div class="sidebar-wrapper scrollbar scrollbar-inner">
+		<div class="sidebar-content">
+
+			{% if user.is_authenticated %}
+
+			<div class="user">
+				<div class="avatar-sm float-left mr-2">
+					<img src="{{request.user.doctor.image.url}}" alt="..." class="avatar-img rounded-circle">
+
+				</div>
+				<div class="info">
+					<a data-toggle="collapse" href="#collapseExample" aria-expanded="true">
+						<span>
+							<span class="user-level" style="margin-top:11px">
+								{{ request.user.username }}
+							</span>
+							{% comment %} <span class="caret"></span> {% endcomment %}
+						</span>
+					</a>
+					<div class="clearfix"></div>
+
+					{% comment %} <div class="collapse in" id="collapseExample">
+						<ul class="nav">
+							<li>
+								<a href="#profile">
+									<span class="link-collapse">My Profile</span>
+								</a>
+							</li>
+							<li>
+								<a href={% url 'logout' %}>
+									<span class="link-collapse">Logout</span>
+								</a>
+							</li>
+						</ul>
+					</div> {% endcomment %}
+				</div>
+			</div>
+			<ul class="nav nav-primary">
+						<!--Dashboard -->
+				<li class="nav-item {% if url_name in 'dashboard' %}active{% endif %}">
+					<a href="{% url 'dashboard' %}">
+						<i class="fas fa-home"></i>
+						<p>{% trans "Dashboard" %}</p>
+						
+					</a>
+				</li>
+
+				<li class="nav-section">
+					<span class="sidebar-mini-icon">
+						<i class="fa fa-ellipsis-h"></i>
+					</span>
+					<h4 class="text-section">{% trans "Menu principal" %}</h4>
+				</li>
+
+				<!--             this for patients                      -->
+				<li class="nav-item {% if url_name in 'addPatient,patientsList,updatePatient' %}active{% endif %}">
+					<a data-toggle="collapse" href="#patients">
+						<i class="fa fa-bed"></i>
+						<p>{% trans "patients" %}</p>
+						<span class="caret"></span>
+					</a>
+					<div class="collapse {% if url_name in 'addPatient,patientsList,updatePatient' %}show{% endif %}" id="patients">
+						<ul class="nav nav-collapse">
+
+							<li class="{% if url_name == 'patientsList' %}active{% endif %}">
+								<a href="{% url 'patientsList' %}">
+									<span class="sub-item">{% trans "Liste des patients" %}</span>
+								</a>
+							</li>
+
+							<li class="{% if url_name == 'addPatient' %}active{% endif %}">
+								<a href="{% url 'addPatient' %}">
+									<span class="sub-item">{% trans "Ajouter patient" %}</span>
+								</a>
+							</li>
+
+						</ul>
+					</div>
+				</li>
+				<!--             end patients                      -->
+
+				<li class="nav-item {% if url_name in 'forms,uploadImg,images' %}active{% endif %}">
+					<a data-toggle="collapse" href="#images">
+						<i class="far fa-images"></i>
+						<p>{% trans "Images" %}</p>
+						<span class="caret"></span>
+					</a>
+
+					<div class="collapse {% if url_name in 'forms,uploadImg,images' %}show{% endif %}" id="images">
+						<ul class="nav nav-collapse">
+							<li class="{% if url_name == 'uploadImg' %}active{% endif %}">
+								<a href="{% url 'uploadImg' %}">
+									<span class="sub-item">{% trans "Charger une Image" %}</span>
+								</a>
+							</li>
+							<li class="{% if url_name == 'images' %}active{% endif %}">
+								<a href="{% url 'images' %}">
+									<span class="sub-item">{% trans "Liste des Images" %}</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+
+
+				{% if url_name in 'preparation' %}
+				<li
+					class="nav-item {% if url_name in 'preparation,asymmetry,border,color,diameter' %}active{% endif %}">
+					<a data-toggle="collapse" href="#traitement">
+						<i class="far fa-paper-plane"></i>
+						<p>{% trans "Traitement" %}</p>
+						<span class="caret"></span>
+					</a>
+					<div class="collapse {% if url_name in 'preparation,asymmetry,border,color,diameter' %}show{% endif %}"
+						id="traitement">
+						<ul class="nav nav-collapse">
+
+							<li onclick="preparation()" id="preparationNav" class="{% if url_name == 'preparation' %}active{% endif %}">
+								<a href="#">
+									<span class="sub-item">{% trans "Préparation" %}</span>
+								</a>
+							</li>
+							<li onclick="asymmetry()" id="asymmetryNav" class="{% if url_name == 'asymmetry' %}active{% endif %}">
+								<a href="#">
+									<span class="sub-item">{% trans "Asymétrie" %}</span>
+								</a>
+							</li>
+							<li onclick="border()" id="borderNav" class="{% if url_name == 'border' %}active{% endif %}">
+								<a href="#">
+									<span class="sub-item">{% trans "Bordure" %}</span>
+								</a>
+							</li>
+							<li onclick="color()" id="colorNav" class="{% if url_name == 'color' %}active{% endif %}">
+								<a href="#">
+									<span class="sub-item">{% trans "Couleur" %}</span>
+								</a>
+							</li>
+							<li onclick="diameter()" id="diameterNav" class="{% if url_name == 'diameter' %}active{% endif %}">
+								<a href="#">
+									<span class="sub-item">{% trans "Diamètre" %}</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+				{% endif %}
+
+				<!--             end patients                      -->
+
+				<!--             Notes                    -->
+				{% if url_name in 'notesList,addNote' %}
+				<li class="nav-item {% if url_name in 'notesList,addNote' %}active{% endif %}">
+					<a data-toggle="collapse" href="#notes">
+						<i class="far fa-sticky-note"></i>
+						<p>{% trans "Notes" %}</p>
+						<span class="caret"></span>
+					</a>
+
+					<div class="collapse {% if url_name in 'notesList,addNote' %}show{% endif %}" id="notes">
+						<ul class="nav nav-collapse">
+							<li class="{% if url_name == 'notesList' %}active{% endif %}">
+								<a href="{% url 'notesList' img.id %}">
+									<span class="sub-item">{% trans "Liste des Notes" %}</span>
+								</a>
+							</li>
+							<li class="{% if url_name == 'addNote' %}active{% endif %}">
+								<a href="{% url 'addNote' img.id %}">
+									<span class="sub-item">{% trans "Ajouter Note" %}</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+				{% endif %}
+			<!--            end  Notes                    -->
+			
+
+			<!--            Settings                      -->
+		
+			<li class="nav-item {% if url_name in 'settings' %}active{% endif %}">
+				<a href="{% url 'settings' %}">
+					<i class="fas fa-cog"></i>
+					<p>{% trans "Paramètres" %}</p>
+					
+				</a>
+			</li>
+			<!--            Settings                      -->
+		
+			<li class="nav-item {% if url_name in 'logout' %}active{% endif %}">
+				<a onclick="removeUser()" href="{% url 'logout' %}">
+					<i class="fas fa-arrow-left"></i>
+					<p>{% trans "Se déconnecter" %}</p>
+				</a>
+			</li>
+			</ul>
+			{% endif %}
+		</div>
+	</div>
+</div>
+<!-- End Sidebar -->
+<script>
+	function removeUser(){
+		localStorage.setItem('user', '')
+	}
+</script>
+{% endwith %}

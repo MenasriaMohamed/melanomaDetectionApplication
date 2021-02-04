@@ -1,0 +1,9 @@
+{% if users %}
+    <ul>
+    {% for user in users %}
+        <li><a href="/polls/{{ user.id }}/">{{ user.username }} [{{ user.date }}]</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No users available.</p>
+{% endif %}

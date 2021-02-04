@@ -1,0 +1,171 @@
+{% extends "layouts/base.html" %}
+{% load i18n %}
+{% block title %} {% trans "Créer un compte" %} {% endblock title %}
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+{% block content %}
+    <div class="page-inner">
+        <div class="page-header">
+            <h4 class="page-title">{% trans "Créer un compte" %}</h4>
+            <ul class="breadcrumbs">
+                <li class="nav-home">
+                    <a href="{% url 'login' %}">
+                        <i class="flaticon-home"></i>
+                    </a>
+                </li>
+                <li class="separator">
+                    <i class="flaticon-right-arrow"></i>
+                </li>
+                <li class="nav-item">
+                    <a href="#">{% trans "Authentication" %}</a>
+                </li>
+                <li class="separator">
+                    <i class="flaticon-right-arrow"></i>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'register' %}">{% trans "Créer un compte" %}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span>{% trans "Créer un compte" %}</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                        {% if msg %}
+                            <br/>
+                            <p style="margin-left: 25px" class="{% if success %}text-success {% else %} text-danger{% endif %}">
+                                {{ msg | safe }}
+                            </p>
+                        {% else %}
+                            <p style="margin-left: 25px"></p>
+                        {% endif %}
+                        </div>
+                    </div>
+                    {% if success %}
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p style="margin-left: 25px">
+                                Veuillez vous connecter avec votre compte <a href={% url 'login' %} class="text-black">par ici</a>
+                            </p>
+                        </div>
+                    </div>
+                    {% else %}
+                        <form method="POST" action="{% url 'register' %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="icon-user"></i>
+                                                </span>
+                                            </div>
+                                            {{ form.firstName }}
+                                        </div>
+                                        <span class="text-danger">{{ form.firstName.errors }}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="icon-user"></i>
+                                                </span>
+                                            </div>
+                                            {{ form.lastName }}
+                                        </div>
+                                        <span class="text-danger">{{ form.lastName.errors }}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="icon-user"></i>
+                                                </span>
+                                            </div>
+                                            {{ userform.username }}
+                                        </div>
+                                        <span class="text-danger">{{ userform.username.errors }}</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="icon-envelope"></i>
+                                                </span>
+                                            </div>
+                                            {{ userform.email }}
+                                        </div>
+                                        <span class="text-danger">{{ userform.email.errors }}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-image"></i>
+                                                </span>
+                                            </div>
+                                            {{ form.image }}
+                                        </div>
+                                        <span class="text-danger">{{ form.image.errors }}</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-phone"></i>
+                                                </span>
+                                            </div>
+                                            {{ form.phone }}
+                                        </div>
+                                        <span class="text-danger">{{ form.phone.errors }}</span>
+                                    </div>
+                                </div> 
+                                <div class="row">  
+                                    <div class="form-group">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="icon-lock"></i>
+                                                </span>
+                                            </div>
+                                            {{ userform.password1 }}
+                                        </div>
+                                        <span class="text-danger">{{ userform.password1.errors }}</span>
+                                    </div>
+                                   
+                                    <div class="form-group">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="icon-lock"></i>
+                                                </span>
+                                            </div>
+                                            {{ userform.password2 }}
+                                        </div>
+                                        <span class="text-danger">{{ userform.password2.errors }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-action">
+                                <button type="submit" class="btn btn-success">{% trans "Enregistrer" %}</button>
+                                &nbsp; &nbsp;
+                                <span>{% trans "Vous avez déja un compte ?" %}</span> <a href={% url 'login' %} >{% trans "Se connecter" %}</a>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+<!-- Specific JS goes HERE -->
+{% block javascripts %}{% endblock javascripts %}
